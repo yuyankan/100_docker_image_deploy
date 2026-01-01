@@ -1,0 +1,12 @@
+# requirements.txt 示例
+torch==2.3.1
+torchvision==0.18.1
+torchaudio==2.3.1
+ultralytics
+opencv-python
+pyodbc  # 添加 pyodbc 库
+pandas  # 经常需要 pandas 来处理数据帧并写入数据库
+numpy
+plotly
+openpyxl
+psycopg2-binary

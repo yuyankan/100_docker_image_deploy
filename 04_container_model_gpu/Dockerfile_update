@@ -1,0 +1,6 @@
+FROM models_gpu_common:202511
+
+RUN apt-get update \
+    && apt-get install -y libgl1-mesa-glx libglvnd0 libxext6 libsm6 ffmpeg \
+    && rm -rf /var/lib/apt/lists/*
+

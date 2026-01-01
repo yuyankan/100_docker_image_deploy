@@ -1,0 +1,31 @@
+FROM models_gpu_common_update:202511
+
+# 接收脚本传入的 build-arg
+ARG http_proxy
+ARG https_proxy
+
+# 设置为环境变量供 pip 使用
+ENV http_proxy=$http_proxy
+ENV https_proxy=$https_proxy
+
+# 设置工作目录
+WORKDIR /workspaces/my_project
+
+# 复制依赖文件
+COPY requirements_update_v2.txt .
+
+# --- 关键修正：添加 --trusted-host ---
+# 虽然有 ENV，但在企业级 Zscaler 环境下，强烈建议显式指定 proxy 和 trusted-host
+RUN pip install --no-cache-dir \
+    --proxy $http_proxy \
+    --trusted-host pypi.org \
+    --trusted-host files.pythonhosted.org \
+    --trusted-host pypi.python.org \
+    -r requirements_update_v2.txt
+
+# 复制项目文件
+COPY . .
+
+# 清理环境变量（防止镜像运行时也强行走代理）
+ENV http_proxy=
+ENV https_proxy=

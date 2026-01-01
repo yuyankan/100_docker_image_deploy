@@ -1,0 +1,28 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  nginx:
+    image: my_nginx_image:202507 # 使用上面 Dockerfile 构建的镜像
+    container_name: my_nginx_container_https
+    ports:
+      - "8011:80" # 将主机的 8010 端口映射到容器的 80 端口
+      - "8443:443" # 新增：HTTPS 端口映射
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro   # 主配置文件
+      - ./conf.d/:/etc/nginx/conf.d/:ro         # 代理配置目录
+      - ./html/:/usr/share/nginx/html/:ro       # 静态文件目录挂载
+      - ./certs/:/etc/nginx/certs/:ro # 新增：挂载本地的证书目录
+    # 移除 depends_on，因为 Grafana 和 Airflow 不再由这个 compose 文件管理
+    # depends_on:
+    #   - grafana_app
+    #   - airflow_webserver
+    restart: always # 容器退出时总是重启
+    networks:
+      - common_use
+
+
+networks:
+  common_use:
+    external: true
+    name: network_docker_common_nginxuse
