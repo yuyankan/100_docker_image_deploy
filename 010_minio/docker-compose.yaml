@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    ports:
+      - "9000:9000"  # API
+      - "9001:9001"  # Console
+    environment:
+      MINIO_ROOT_USER: admin_minio
+      MINIO_ROOT_PASSWORD: admin_minio
+    volumes:
+      - /home/carenk/my_data/00_enviroment/010_minio/mnt/data/minio_data:/data
+    command: server /data --address ":9000" --console-address ":9001"
+    restart: unless-stopped
+    networks:
+      - network_docker_common_nginxuse
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  network_docker_common_nginxuse:
+    external: true
+

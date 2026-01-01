@@ -1,0 +1,25 @@
+services:
+  # ... kafka 服务 ...
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy
+      #depends_on:
+      #- kafka
+    ports:
+      # 映射 8010 端口到宿主机
+      - "8010:8010" 
+      # 映射 80 端口（如果您保留了 http 块）
+      - "80:80" 
+    volumes:
+      # ⚠️ 挂载您创建的 nginx.conf 文件
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - kafka_net
+
+
+networks:
+  kafka_net: # 内部别名
+    external: true
+    name: devcontainer_default # 外部网络名称 (供 Producer 容器引用)
+

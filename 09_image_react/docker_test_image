@@ -1,0 +1,22 @@
+FROM node:20-bullseye AS builder
+
+WORKDIR /app
+
+## 拷贝 npm 配置文件
+#COPY package*.json package-lock.json ./
+COPY package.json package-lock.json* ./
+# 使用 lock 文件严格安装
+
+# 调试：显示拷贝到镜像里的文件（构建时会打印）
+RUN echo "---- files in /app before npm ci ----" && ls -la /app && echo "---- head of package-lock.json ----" && head -n 20 package-lock.json || true
+#
+
+
+RUN npm ci
+
+# 拷贝源码
+COPY . .
+
+RUN npm run build
+
+
