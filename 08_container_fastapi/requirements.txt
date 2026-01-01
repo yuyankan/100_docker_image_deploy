@@ -1,0 +1,6 @@
+fastapi
+uvicorn[standard]
+boto3
+psutil
+opencv-python-headless
+cachetools

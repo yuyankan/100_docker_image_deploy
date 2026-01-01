@@ -1,0 +1,30 @@
+FROM models_env_common:202508
+
+# 声明 ARG 变量，用于在构建i时接收代理参数。
+# 这里不需要设置默认值，因为代理地址是敏感信息。
+ARG http_proxy
+ARG https_proxy
+
+# 使用 ENV 将 ARG 变量的值设置为环境变量。
+# ENV 指令会确保后续的 RUN 指令都能访问到这些变量。
+ENV http_proxy=$http_proxy
+ENV https_proxy=$https_proxy
+
+
+# 安装缺失的依赖库
+#RUN apt-get update && apt-get install -y libgl1-mesa-glx
+RUN apt-get update && apt-get install -y \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# 设置工作目录
+#WORKDIR /workspaces/my_project
+
+# 复制你的依赖文件并安装
+
+#RUN pip install --no-cache-dir -r requirements.txt
+
+# 复制你的所有项目文件到容器中
+#COPY . .
+

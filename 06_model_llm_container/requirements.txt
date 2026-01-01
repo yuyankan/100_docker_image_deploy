@@ -1,0 +1,5 @@
+vllm==0.5.4
+transformers
+fastapi
+uvicorn
+

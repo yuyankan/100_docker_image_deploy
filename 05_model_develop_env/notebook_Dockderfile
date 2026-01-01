@@ -1,0 +1,42 @@
+#FROM models_env_common_update:202508
+FROM models_gpu_common_update_v2:202511
+
+# ----------------------------------------------------
+# 优化 1: 确保代理设置完整且格式正确
+# ----------------------------------------------------
+# 修正了 HTTPS_PROXY 缺失的引号
+# 确保所有网络操作（包括 VS Code Server 下载）使用代理
+ENV HTTP_PROXY="http://gateway.zscalertwo.net:10090" \
+    HTTPS_PROXY="http://gateway.zscalertwo.net:10090" \
+    http_proxy="http://gateway.zscalertwo.net:10090" \
+    https_proxy="http://gateway.zscalertwo.net:10090"
+
+# ----------------------------------------------------
+# 优化 2: 设置工作目录
+# ----------------------------------------------------
+# 保持不变
+WORKDIR /workspaces/my_project
+
+# ----------------------------------------------------
+# 优化 3: 复制依赖并利用 Docker 缓存机制
+# ----------------------------------------------------
+# 仅复制 requirements.txt 以最大限度地利用 Docker 缓存。
+# 只有 requirements.txt 更改时，下面的 RUN 才会重新执行。
+COPY requirements.txt .
+# 使用 --break-system-packages (如果基础镜像是基于新版Python/pip)
+# 并在安装后清理缓存，减少镜像大小
+RUN pip install --no-cache-dir -r requirements.txt \
+    && rm -rf /root/.cache/pip
+
+# ----------------------------------------------------
+# 优化 4: 复制项目文件
+# ----------------------------------------------------
+# 保持不变。如果项目文件经常变动，将其放在最后可以避免频繁重建依赖层。
+COPY . .
+
+# ----------------------------------------------------
+# 优化 5: 增加 Dev Containers 最佳实践 (可选但推荐)
+# ----------------------------------------------------
+# 推荐使用非 root 用户运行，增强安全性，并兼容 VS Code Dev Containers
+# 假设基础镜像中有一个非 root 用户（如 'user' 或 'jovyan'），否则需要手动创建。
+# USER user
